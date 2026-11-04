@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultas - Ingeniería Informática</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .chat-container { width: 100%; max-width: 480px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 90vh; }
+    .chat-header { background: #004848; color: white; padding: 15px; text-align: center; font-weight: bold; }
+    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .message { max-width: 80%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
+    .user { background: #007bff; color: white; align-self: flex-end; }
+    .bot { background: #e9ecef; color: #333; align-self: flex-start; }
+    .chat-input { display: flex; border-top: 1px solid #ddd; padding: 10px; background: #fff; }
+    .chat-input input { flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 6px; outline: none; }
+    .chat-input button { background: #004848; color: white; border: none; padding: 10px 15px; margin-left: 8px; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="chat-header">Consultas Ingeniería Informática</div>
+  <div class="chat-messages" id="chat">
+    <div class="message bot">¡Hola! Soy el asistente virtual de la carrera. Hazme cualquier pregunta sobre el plan de estudios o materias.</div>
+  </div>
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Escribe tu duda aquí..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+</div>
+
+<script>
+  const WEBHOOK_URL = "https://rebirth-previous-obvious.ngrok-free.dev"; // Reemplaza con tu URL de ngrok
+
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chat");
+    const text = input.value.trim();
+    if (!text) return;
+
+    // Agregar mensaje del usuario
+    chat.innerHTML += `<div class="message user">${text}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    // Indicador de carga
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "message bot";
+    loadingDiv.innerText = "Pensando...";
+    chat.appendChild(loadingDiv);
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      loadingDiv.innerText = data.response || "No recibí respuesta.";
+    } catch (err) {
+      loadingDiv.innerText = "Error de conexión con el servidor.";
+    }
+    chat.scrollTop = chat.scrollHeight;
+  }
+</script>
+
+</body>
+</html>

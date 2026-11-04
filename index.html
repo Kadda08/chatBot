@@ -45,9 +45,7 @@
                 });
 
                 const data = await response.json();
-
-                // AQUÍ SE TOMA EL VALOR DE LA RESPUESTA DE n8n
-                const botReply = data.response || "No se obtuvo respuesta.";
+                const botReply = data.response || data.message || data.output || JSON.stringify(data);
 
                 // Mostrar respuesta del bot
                 messagesDiv.innerHTML += `<div class="message bot"><b>Bot:</b> ${botReply}</div>`;
